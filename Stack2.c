@@ -56,11 +56,7 @@ void menu() {
  int choice, value;
  while (1) {
  printf("\nStack Operations Menu:\n");
- printf("1. Push\n");
- printf("2. Pop\n");
- printf("3. Peek\n");
- printf("4. Display\n");
- printf("5. Exit\n");
+ printf("1. Push\n2. Pop\n3. Peek\n4. Display\n5 Exit");
  printf("Enter your choice: ");
  scanf("%d", &choice);
  switch (choice) {
