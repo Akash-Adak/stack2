@@ -1,95 +1,79 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
 #include <string.h>
-#define MAX 100
-// Stack operations
-void push(char stack[], int *top, char c) {
- if (*top < MAX - 1) {
- stack[++(*top)] = c;
- } else {
- printf("Stack overflow\n");
- exit(EXIT_FAILURE);
- }
-}
-char pop(char stack[], int *top) {
- if (*top == -1) {
- printf("Stack underflow\n");
- exit(EXIT_FAILURE);
- }
- return stack[(*top)--];
-}
-char peek(char stack[], int top) {
- if (top == -1) {
- printf("Stack is empty\n");
- exit(EXIT_FAILURE);
- }
- return stack[top];
-}
-int precedence(char op) {
- switch (op) {
- case '+':
- case '-':
- return 1;
- case '*':
- case '/':
- return 2;
- default:
- return 0;
- }
-}
-// Function to convert infix expression to postfix expression
-void infixToPostfix(const char* infix, char* postfix) {
- char stack[MAX];
- int top = -1;
- int k = 0;
 
- for (int i = 0; infix[i] != '\0'; i++) {
- char c = infix[i];
-
- if (isspace(c)) {
- continue; // Skip whitespace
- }
-
- if (isalnum(c)) {
- postfix[k++] = c; // Append operand to postfix expression
- } else if (c == '(') {
- push(stack, &top, c); // Push '(' onto stack
- } else if (c == ')') {
- while (top != -1 && peek(stack, top) != '(') {
- postfix[k++] = pop(stack, &top); // Pop and append until '(' is found
- }
- if (top != -1 && peek(stack, top) == '(') {
- pop(stack, &top); // Pop '('
- }
- } else { // Operator
- while (top != -1 && precedence(peek(stack, top)) >= precedence(c)) {
- postfix[k++] = pop(stack, &top); // Pop operators with higher or equal precedence
- }
- push(stack, &top, c); // Push current operator onto stack
- }
- }
-
- // Pop any remaining operators in the stack
- while (top != -1) {
- postfix[k++] = pop(stack, &top);
- }
-
- postfix[k] = '\0'; // Null-terminate the output string
+// Function to return precedence of operators
+int prec(char c) {
+    if (c == '^')
+        return 3;
+    else if (c == '/' || c == '*')
+        return 2;
+    else if (c == '+' || c == '-')
+        return 1;
+    else
+        return -1;
 }
+
+// Function to return associativity of operators
+char associativity(char c) {
+    if (c == '^')
+        return 'R';
+    return 'L'; // Default to left-associative
+}
+
+// The main function to convert infix expression to postfix expression
+void infixToPostfix(char s[]) {
+    char result[1000];
+    int resultIndex = 0;
+    int len = strlen(s);
+    char stack[1000];
+    int stackIndex = -1;
+
+    for (int i = 0; i < len; i++) {
+        char c = s[i];
+
+        // If the scanned character is an operand, add it to the output string.
+        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+            result[resultIndex++] = c;
+        }
+        // If the scanned character is an ‘(‘, push it to the stack.
+        else if (c == '(') {
+            stack[++stackIndex] = c;
+        }
+        // If the scanned character is an ‘)’, pop and add to the output string from the stack
+        // until an ‘(‘ is encountered.
+        else if (c == ')') {
+            while (stackIndex >= 0 && stack[stackIndex] != '(') {
+                result[resultIndex++] = stack[stackIndex--];
+            }
+            stackIndex--; // Pop '('
+        }
+        // If an operator is scanned
+        else {
+            while (stackIndex >= 0 && (prec(s[i]) < prec(stack[stackIndex]) ||
+                                       prec(s[i]) == prec(stack[stackIndex]) &&
+                                           associativity(s[i]) == 'L')) {
+                result[resultIndex++] = stack[stackIndex--];
+            }
+            stack[++stackIndex] = c;
+        }
+    }
+
+    // Pop all the remaining elements from the stack
+    while (stackIndex >= 0) {
+        result[resultIndex++] = stack[stackIndex--];
+    }
+
+    result[resultIndex] = '\0';
+    printf("%s\n", result);
+}
+
+// Driver code
 int main() {
- char infix[MAX];
- char postfix[MAX];
+    char exp[] = "a+b*(c^d-e)^(f+g*h)-i";
 
- printf("Enter infix expression: ");
- fgets(infix, MAX, stdin);
+    // Function call
+    infixToPostfix(exp);
 
- // Remove newline character from input
- infix[strcspn(infix, "\n")] = '\0';
-
- infixToPostfix(infix, postfix);
-
- printf("Postfix expression: %s\n", postfix);
-
- return 0;
+    return 0;
 }
