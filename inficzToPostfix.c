@@ -1,79 +1,63 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-// Function to return precedence of operators
-int prec(char c) {
-    if (c == '^')
-        return 3;
-    else if (c == '/' || c == '*')
-        return 2;
-    else if (c == '+' || c == '-')
-        return 1;
-    else
-        return -1;
+#include<stdio.h>
+#define max 100
+int top=-1, a[max];
+void push(char x)
+{
+    a[++top]=x;
+}
+char pop()
+{ if(top==-1)
+return -1;
+else
+return a[top--];
 }
 
-// Function to return associativity of operators
-char associativity(char c) {
-    if (c == '^')
-        return 'R';
-    return 'L'; // Default to left-associative
-}
-
-// The main function to convert infix expression to postfix expression
-void infixToPostfix(char s[]) {
-    char result[1000];
-    int resultIndex = 0;
-    int len = strlen(s);
-    char stack[1000];
-    int stackIndex = -1;
-
-    for (int i = 0; i < len; i++) {
-        char c = s[i];
-
-        // If the scanned character is an operand, add it to the output string.
-        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
-            result[resultIndex++] = c;
-        }
-        // If the scanned character is an ‘(‘, push it to the stack.
-        else if (c == '(') {
-            stack[++stackIndex] = c;
-        }
-        // If the scanned character is an ‘)’, pop and add to the output string from the stack
-        // until an ‘(‘ is encountered.
-        else if (c == ')') {
-            while (stackIndex >= 0 && stack[stackIndex] != '(') {
-                result[resultIndex++] = stack[stackIndex--];
-            }
-            stackIndex--; // Pop '('
-        }
-        // If an operator is scanned
-        else {
-            while (stackIndex >= 0 && (prec(s[i]) < prec(stack[stackIndex]) ||
-                                       prec(s[i]) == prec(stack[stackIndex]) &&
-                                           associativity(s[i]) == 'L')) {
-                result[resultIndex++] = stack[stackIndex--];
-            }
-            stack[++stackIndex] = c;
-        }
-    }
-
-    // Pop all the remaining elements from the stack
-    while (stackIndex >= 0) {
-        result[resultIndex++] = stack[stackIndex--];
-    }
-
-    result[resultIndex] = '\0';
-    printf("%s\n", result);
-}
-
-// Driver code
-int main() {
-    char exp[] = "a+b*(c^d-e)^(f+g*h)-i";
-
-    // Function call
-    infixToPostfix(exp);
-
+int prcd(char c)
+{   if(c=='(')
     return 0;
+    else if(c=='+'||c=='-')
+    return 1;
+    else if(c=='*'||c=='/')
+    return 2;
+}
+int infixtopostfix(char infix[max],char postfix[max])
+{
+    char temp,x;
+    int i=0,j=0;
+    while(infix[i]!='\0')
+    {
+        temp=infix[i];
+       if(isalnum(temp))
+        {
+            postfix[j++]=temp;
+        }
+        else if(temp=='(')
+         push(temp);
+        else if(temp==')')
+            {
+         while((x=pop())!='(')
+         {
+          postfix[j++]=x;
+           }
+          }
+        else
+        {  while(prcd(a[top])>=prcd(temp))
+            {postfix[j++]=pop();}
+                push(temp);
+        }
+        i++;
+    }
+    while(top!= -1)
+    postfix[j++]=pop();
+    postfix[j]='\0';
+}
+main()
+{
+    char infix[max],postfix[max];
+    printf("Enter the infix expression\n");
+    gets(infix);
+    printf("The infix expression is %s\n",infix);
+    infixtopostfix(infix, postfix);
+    printf("The postfix expression is %s\n",postfix);
+
 }
