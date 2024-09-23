@@ -1,6 +1,4 @@
 #include<stdio.h>
-#include<ctype.h>
-#include<string.h>
 #define max 100
 int top=-1, a[max];
 void push(char x)
@@ -55,7 +53,7 @@ void infixtoprefix(char infix[max],char prefix[max])
     prefix[j]='\0';
     strrev(prefix);
 }
- void main()
+main()
 {
     char infix[max],prefix[max];
     printf("Enter the infix expression\n");
