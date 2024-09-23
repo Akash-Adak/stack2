@@ -17,7 +17,7 @@ int prcd(char c)
     return 0;
     else if(c=='+'||c=='-')
     return 1;
-    else if(c=='*'||c=='/')
+    else if(c=='*'||c=='/'|| c=='%')
     return 2;
 }
 void infixtoprefix(char infix[max],char prefix[max])
@@ -42,7 +42,7 @@ void infixtoprefix(char infix[max],char prefix[max])
            }
           }
         else
-        {  while(prcd(a[top])>=prcd(temp))
+        {  while(prcd(a[top])>prcd(temp))
             {prefix[j++]=pop();}
                 push(temp);
         }
