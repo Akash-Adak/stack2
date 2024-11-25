@@ -76,19 +76,16 @@ void delete_position(){
     scanf("%d",&pos);
     temp=start;
     while(i<pos){
-        prev=next;
+        prev=temp;
         temp=temp->add;
         i++;
     }
-    next=temp->add;
-    prev->add=next;
+  
+    prev->add=temp->add;
     printf("the deleted node is %d",temp->data);
     free(temp);
  }
 }
-
-
-
 void main(){
     int choice;
     do{
